@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
+#include <random>
 #include <ctime>
+#include <algorithm>
 
 #include "Sudoku.h"
 
@@ -131,28 +133,40 @@ unsigned int Sudoku::getBoardValue(int row, int col)
  * @brief Solve the Sudoku
  * @param row The row of the cell
  * @param col The column of the cell
+ * @param values The values to try in the cell
  * @return true if the Sudoku is solved, false otherwise
  * @details The algorithm is a backtracking algorithm, it tries to put a value in a 
  * cell and if it is not possible, it tries another value. If it is not possible to
  * put a value in a cell, it goes back to the previous cell and tries another value.
  * If it is not possible to put a value in the first cell, the Sudoku is not solvable.
- * @note This function is recursive
 */
-bool Sudoku::solveSudoku(int row, int col)
+bool Sudoku::solveSudoku(int row, int col, vector<unsigned int> values)
 {
   if (!findUnassignedLocation(row, col))
     return true;
 
-  for (int i = 1; i <= size; i++)
+  // vector<unsigned int> values = generateRandomPermutation(size);
+  for (int value : values)
   {
-    if (checkValue(row, col, i))
+    if (checkValue(row, col, value))
     {
-      board[row][col] = i;
-      if (solveSudoku(row, col))
+      board[row][col] = value;
+      if (solveSudoku(row, col, values))
         return true;
       board[row][col] = 0;
     }
   }
+
+  // for (int i = 1; i <= size; i++)
+  // {
+  //   if (checkValue(row, col, i))
+  //   {
+  //     board[row][col] = i;
+  //     if (solveSudoku(row, col))
+  //       return true;
+  //     board[row][col] = 0;
+  //   }
+  // }
 
   return false;
 }
@@ -163,7 +177,8 @@ bool Sudoku::solveSudoku(int row, int col)
 */
 bool Sudoku::solveSudoku()
 {
-  return this->solveSudoku(0, 0);
+  vector<unsigned int> values = generateRandomPermutation(size);
+  return this->solveSudoku(0, 0, values);
 }
 
 /**
@@ -196,6 +211,26 @@ bool Sudoku::checkValue(int row, int col, unsigned int value)
         return false;
 
   return true;
+}
+
+/**
+ * @brief Generate a random permutation of values between 1 and maxValue.
+ * @param maxValue maximum value of generated permutation
+ * @return generated permutation
+ * @details This function generates a permutation of unique integers from 1 up to the specified 
+ * maxValue. It first creates a sequence of numbers in ascending order and then shuffles this sequence 
+ * to produce a random permutation. The function employs a Mersenne Twister engine (mt19937) for 
+ * random shuffling, which is known for its high-quality pseudo-random number generation.
+*/
+vector<unsigned int> Sudoku::generateRandomPermutation(int maxValue)
+{
+  random_device m_rd;
+  mt19937 m_mt{m_rd()};
+	vector<unsigned int> values(maxValue);
+	int n = 0;
+	generate(values.begin(), values.end(), [&n]() { return ++n; });
+	shuffle(values.begin(), values.end(), m_rd);
+	return values;
 }
 
 /**

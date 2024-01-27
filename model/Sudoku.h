@@ -14,7 +14,8 @@ private:
 
     bool checkValue(int, int, unsigned int);
     bool findUnassignedLocation(int &, int &);
-    bool solveSudoku(int, int);
+    bool solveSudoku(int, int, vector<unsigned int>);
+    vector<unsigned int> generateRandomPermutation(int);
 
 public:
     Sudoku(int size);
