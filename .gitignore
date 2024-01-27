@@ -26,10 +26,11 @@
 *.a
 *.lib
 
-# Executables
+# Executables except those in release/ directory
 *.exe
 *.out
 *.app
+!release/*
 
 # vs code
 .vscode
