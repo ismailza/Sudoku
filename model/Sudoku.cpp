@@ -11,12 +11,13 @@
  * @param size The size of the Sudoku
  * @details The boxSize is calculated as the square root of the size and the board is initialized with 0
 */
-Sudoku::Sudoku(int size) : size(size), boxSize((int)sqrt(size))
+Sudoku::Sudoku(int difficulty,int size) : difficulty(difficulty), size(size), boxSize((int)sqrt(size))
 {
   board = vector<vector<unsigned int>>(size, vector<unsigned int>(size));
   for (int i = 0; i < size; i++)
     for (int j = 0; j < size; j++)
       board[i][j] = 0;
+  initBoard();
 }
 
 /**
@@ -50,6 +51,15 @@ int Sudoku::getBoxSize()
 }
 
 /**
+ * @brief Get the difficulty of the Sudoku
+ * @return The difficulty of the Sudoku
+*/
+int Sudoku::getDifficulty()
+{
+  return difficulty;
+}
+
+/**
  * @brief Reset the board to 0
  * @return void
 */
@@ -70,6 +80,7 @@ Sudoku &Sudoku::operator=(const Sudoku &s)
   board.clear();
   this->size = s.size;
   this->boxSize = s.boxSize;
+  this->difficulty = s.difficulty;
   board = vector<vector<unsigned int>>(size, vector<unsigned int>(size));
   for (int i = 0; i < size; i++)
     for (int j = 0; j < size; j++)
@@ -78,17 +89,16 @@ Sudoku &Sudoku::operator=(const Sudoku &s)
 }
 
 /**
- * @brief Initialize the board of the Sudoku
- * @param level The level of the Sudoku
- * @note The level is an integer between 0 and 2: 0 for easy, 1 for medium and 2 for hard
- * @details The level is used to determine the number of cells to remove from the board
+ * @brief Initialize the board of the Sudoku with a given difficulty
+ * @details First, the Sudoku is solved. Then, a number of cells are removed from the board
+ * according to the difficulty.
  * @return void
 */
-void Sudoku::initBoard(const int level)
+void Sudoku::initBoard()
 {
-  int rate, nb, row, col;
+  int rate, nb, row, col, i = 0;
   unsigned char value;
-  switch (level)
+  switch (difficulty)
   {
   case 0:
     rate = 60; break;
@@ -102,10 +112,8 @@ void Sudoku::initBoard(const int level)
   
   solveSudoku();
 
-  nb = size * size * rate / 100;
-
+  nb = static_cast<int>(pow(size, 2) * rate / 100);
   srand((unsigned int)time(nullptr));
-  int i = 0;
   while (i < nb)
   {
     row = rand() % size;
@@ -119,14 +127,35 @@ void Sudoku::initBoard(const int level)
 }
 
 /**
- * @brief Get the value of a cell of the board
+ * @brief Get the value of a cell
  * @param row The row of the cell
  * @param col The column of the cell
  * @return The value of the cell
 */
-unsigned int Sudoku::getBoardValue(int row, int col)
+unsigned int Sudoku::getValueAt(int row, int col)
 {
   return board[row][col];
+}
+
+/**
+ * @brief Set the value of a cell
+ * @param row The row of the cell
+ * @param col The column of the cell
+ * @param value The value to set
+ * @return void
+*/
+void Sudoku::setValueAt(int row, int col, unsigned int value)
+{
+  board[row][col] = value;
+}
+
+/**
+ * @brief Get the board of the Sudoku
+ * @return The board of the Sudoku
+*/
+vector<vector<unsigned int>> Sudoku::getBoard()
+{
+  return board;
 }
 
 /**
@@ -268,4 +297,14 @@ void Sudoku::printBoard()
     }
     cout << endl;
   }
+}
+
+/**
+ * @brief Check if the Sudoku is solved
+ * @return true if the Sudoku is solved, false otherwise
+*/
+bool Sudoku::isSolved()
+{
+  int row, col;
+  return !findUnassignedLocation(row, col);
 }

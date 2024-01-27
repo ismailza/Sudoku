@@ -10,24 +10,29 @@ class Sudoku
 private:
     int size;
     int boxSize;
+    int difficulty;
     vector<vector<unsigned int>> board;
 
-    bool checkValue(int, int, unsigned int);
     bool findUnassignedLocation(int &, int &);
     bool solveSudoku(int, int, vector<unsigned int>);
     vector<unsigned int> generateRandomPermutation(int);
 
 public:
-    Sudoku(int size);
+    Sudoku(int, int);
     int getSize();
-    void setSize(int size);
+    void setSize(int);
+    int getDifficulty();
     int getBoxSize();
-    void initBoard(const int);
+    void initBoard();
     Sudoku &operator=(const Sudoku &);
     void printBoard();
     bool solveSudoku();
-    unsigned int getBoardValue(int, int);
+    bool checkValue(int, int, unsigned int);
+    unsigned int getValueAt(int, int);
+    void setValueAt(int, int, unsigned int);
+    vector<vector<unsigned int>> getBoard();
     void resetBoard();
+    bool isSolved();
 };
 
 #endif // SUDOKU_H
