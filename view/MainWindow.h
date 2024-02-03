@@ -7,6 +7,7 @@
 
 #include "MenuButton.cpp"
 #include "SudokuSquare.cpp"
+#include "CircleNumberButton.cpp"
 #include "../model/Sudoku.cpp"
 
 class MainWindow
@@ -19,6 +20,7 @@ class MainWindow
 
     vector<vector<SudokuSquare *>> sudokuSquares;
     vector<MenuButton *> menuButtons;
+    vector<vector<CircleNumberButton *>> numberButtons;
     SudokuSquare *clickedSquare;
 
     bool gamePaused;

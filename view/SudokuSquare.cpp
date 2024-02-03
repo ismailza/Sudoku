@@ -113,3 +113,16 @@ void SudokuSquare::update(SquareState newState)
 	m_state = newState;
 	setFillColor(m_activeColor);
 }
+
+void SudokuSquare::hide()
+{
+	setFillColor(Color::Transparent);
+	m_text.setString("");
+}
+
+void SudokuSquare::show()
+{
+	setFillColor(m_activeColor);
+	if (m_value != 0)
+		m_text.setString(to_string(m_value));
+}

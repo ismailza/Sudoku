@@ -15,7 +15,7 @@ MainWindow::MainWindow(int difficulty, int size, const string &playerName)
 
   int boardSize = squareSize * (size + 1);
   int headerHeight = 60;
-  width = boardSize + 175;
+  width = boardSize + 190;
   height = boardSize + headerHeight;
 
   sudoku = new Sudoku(difficulty, size);
@@ -62,6 +62,20 @@ MainWindow::MainWindow(int difficulty, int size, const string &playerName)
   menuButtons.push_back(new MenuButton(width - 175, headerHeight + 40 * menuButtons.size(), 150, 40, font, "New Game", MenuButton::NEW_GAME));
   menuButtons.push_back(new MenuButton(width - 175, headerHeight + 40 * menuButtons.size(), 150, 40, font, "Pause", MenuButton::PAUSE_GAME));
   menuButtons.push_back(new MenuButton(width - 175, headerHeight + 40 * menuButtons.size(), 150, 40, font, "Solve", MenuButton::SOLVE_GAME));
+
+  // Set up number buttons
+  numberButtons.resize(sudoku->getBoxSize());
+  for (int i = 0; i < sudoku->getBoxSize(); i++)
+  {
+    numberButtons[i].resize(sudoku->getBoxSize());
+    for (int j = 0; j < sudoku->getBoxSize(); j++)
+    {
+      int number = i * sudoku->getBoxSize() + j + 1;
+      int x = width - 175 + j * 50;
+      int y = headerHeight + 40 * menuButtons.size() + 40 + i * 50;
+      numberButtons[i][j] = new CircleNumberButton(number, Vector2f(x, y), 20, font, 18);
+    }
+  }
 }
 
 MainWindow::~MainWindow()
@@ -76,6 +90,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::onMouseButtonClicked(const Vector2f &mousePosition)
 {
+  // Check if any menu button was clicked
   for (auto &button : menuButtons)
   {
     if (button->getGlobalBounds().contains(mousePosition))
@@ -83,10 +98,12 @@ void MainWindow::onMouseButtonClicked(const Vector2f &mousePosition)
       switch (button->getFunction())
       {
       case MenuButton::NEW_GAME:
-        onNewGameButtonClicked();
+        if (!gamePaused)
+          onNewGameButtonClicked();
         break;
       case MenuButton::SOLVE_GAME:
-        onSolveButtonClicked();
+        if (!gameFinished && !gamePaused)
+          onSolveButtonClicked();
         break;
       case MenuButton::PAUSE_GAME:
         onPauseButtonClicked();
@@ -97,8 +114,26 @@ void MainWindow::onMouseButtonClicked(const Vector2f &mousePosition)
       return;
     }
   }
-  if (gameFinished)
+  // Check if the game is finished or paused
+  if (gameFinished || gamePaused)
     return;
+  // Check if any number button was clicked
+  for (auto &row : numberButtons)
+  {
+    for (auto &button : row)
+    {
+      if (button->isClicked(mousePosition))
+      {
+        if (clickedSquare != nullptr && !clickedSquare->getValueConstant())
+        {
+          int value = button->getNumber();
+          update(clickedSquare->getRow(), clickedSquare->getCol(), value);
+        }
+        return;
+      }
+    }
+  }
+  // Check if any Sudoku square was clicked
   for (auto &row : sudokuSquares)
   {
     for (auto &square : row)
@@ -129,7 +164,7 @@ void MainWindow::onMouseMoved(const Vector2f &mousePosition)
 
 void MainWindow::onKeyButtonClicked(Event::TextEvent text)
 {
-  if (gameFinished || clickedSquare == nullptr || clickedSquare->getValueConstant())
+  if (gameFinished || gamePaused || clickedSquare == nullptr || clickedSquare->getValueConstant())
     return;
   if (text.unicode < '0' || '9' < text.unicode)
     return;
@@ -141,22 +176,23 @@ void MainWindow::onKeyButtonClicked(Event::TextEvent text)
 
 void MainWindow::onBackspaceButtonClicked()
 {
-  if (!gameFinished && clickedSquare != nullptr && !clickedSquare->getValueConstant())
+  if (!gamePaused && !gameFinished && clickedSquare != nullptr && !clickedSquare->getValueConstant())
   {
     update(clickedSquare->getRow(), clickedSquare->getCol(), 0);
     sudoku->setValueAt(clickedSquare->getRow(), clickedSquare->getCol(), 0);
   }
 }
 
-void MainWindow::updateClock() {
-    if (gameFinished || gamePaused)
-        return;
+void MainWindow::updateClock()
+{
+  if (gameFinished || gamePaused)
+    return;
 
-    Time elapsedTime = clock->getElapsedTime() - totalPausedTime;
-    int seconds = elapsedTime.asSeconds();
-    int minutes = seconds / 60;
-    seconds %= 60;
-    clockText.setString((minutes < 10 ? "0" : "") + to_string(minutes) + ":" + (seconds < 10 ? "0" : "") + to_string(seconds));
+  Time elapsedTime = clock->getElapsedTime() - totalPausedTime;
+  int seconds = elapsedTime.asSeconds();
+  int minutes = seconds / 60;
+  seconds %= 60;
+  clockText.setString((minutes < 10 ? "0" : "") + to_string(minutes) + ":" + (seconds < 10 ? "0" : "") + to_string(seconds));
 }
 
 void MainWindow::update(int rowClicked, int colClicked, int valueClicked)
@@ -189,7 +225,8 @@ void MainWindow::update(int rowClicked, int colClicked, int valueClicked)
   if (clickedSquare->getValueConstant())
     return;
   clickedSquare->setValue(valueClicked);
-  sudoku->setValueAt(rowClicked, colClicked, valueClicked);
+  if (sudoku->checkValue(rowClicked, colClicked, valueClicked))
+    sudoku->setValueAt(rowClicked, colClicked, valueClicked);
 
   if (sudoku->isSolved())
   {
@@ -208,11 +245,14 @@ void MainWindow::onAnimationStageChanged()
     switch (animationStage % 3)
     {
     case 0:
-      flashColor = Color::Green; break;
+      flashColor = Color::Green;
+      break;
     case 1:
-      flashColor = Color::Yellow; break;
+      flashColor = Color::Yellow;
+      break;
     case 2:
-      flashColor = Color::Red; break;
+      flashColor = Color::Red;
+      break;
     }
 
     for (auto &row : sudokuSquares)
@@ -236,8 +276,11 @@ void MainWindow::onAnimationStageChanged()
 
 void MainWindow::onNewGameButtonClicked()
 {
+  if (gamePaused)
+    return;
   sudoku = new Sudoku(sudoku->getDifficulty(), sudoku->getSize());
-  for (auto &row : sudokuSquares) {
+  for (auto &row : sudokuSquares)
+  {
     for (auto &square : row)
     {
       square->setValue(sudoku->getValueAt(square->getRow(), square->getCol()));
@@ -253,19 +296,30 @@ void MainWindow::onNewGameButtonClicked()
   menuButtons[1]->setText("Pause");
 }
 
-void MainWindow::onPauseButtonClicked() {
+void MainWindow::onPauseButtonClicked()
+{
   if (gameFinished)
     return;
 
-  if (gamePaused) {
+  if (gamePaused)
+  {
     // Resume the game
     menuButtons[1]->setText("Pause");
     clock->restart();
     totalPausedTime += clock->getElapsedTime() - pauseStartTime;
-  } else {
+    for (auto &row : sudokuSquares)
+      for (auto &square : row)
+        square->show();
+  }
+  else
+  {
     // Pause the game
     menuButtons[1]->setText("Resume");
     pauseStartTime = clock->getElapsedTime();
+    // mask all squares
+    for (auto &row : sudokuSquares)
+      for (auto &square : row)
+        square->hide();
   }
 
   gamePaused = !gamePaused;
@@ -273,7 +327,8 @@ void MainWindow::onPauseButtonClicked() {
 
 void MainWindow::onSolveButtonClicked()
 {
-  sudoku->solveSudoku();
+  if (gameFinished || gamePaused)
+    return;
   for (auto &row : sudokuSquares)
     for (auto &square : row)
       square->setValue(sudoku->getValueAt(square->getRow(), square->getCol()));
@@ -291,7 +346,7 @@ void MainWindow::run()
     cout << "Couldn't load the icon 'favicon.ico'. Check if the file exists in " + string(IMG_PATH_DIR) + " directory." << endl;
   else
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-  
+
   while (window.isOpen())
   {
     Event event;
@@ -325,12 +380,16 @@ void MainWindow::run()
     window.draw(difficultyText);
     window.draw(clockText);
 
-    for (auto &button : menuButtons)
-      button->draw(&window);
-
     for (auto &row : sudokuSquares)
       for (auto &square : row)
         square->draw(&window, RenderStates::Default);
+
+    for (auto &button : menuButtons)
+      button->draw(&window);
+
+    for (auto &row : numberButtons)
+      for (auto &button : row)
+        button->draw(&window);
 
     updateClock();
     window.display();

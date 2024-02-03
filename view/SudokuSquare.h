@@ -25,6 +25,8 @@ public:
 	int getRow();
 	int getCol();
 	void update(SquareState newState);
+	void hide();
+	void show();
 
 private:
 	int m_row, m_col; // Position on the board
