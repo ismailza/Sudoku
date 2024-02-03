@@ -17,7 +17,8 @@ public:
 		NEW_GAME,
 		PAUSE_GAME,
 		SOLVE_GAME,
-		QUIT_GAME
+		QUIT_GAME,
+		EXIT_GAME
 	};
 	MenuButton(float x, float y, float width, float height, const Font &font, const string &text, ButtonFunction function);
 	ButtonFunction getFunction();

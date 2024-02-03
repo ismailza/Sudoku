@@ -59,9 +59,10 @@ MainWindow::MainWindow(int difficulty, int size, const string &playerName)
   }
 
   // Set up menu buttons
-  menuButtons.push_back(new MenuButton(width - 175, headerHeight + 40 * menuButtons.size(), 150, 40, font, "New Game", MenuButton::NEW_GAME));
-  menuButtons.push_back(new MenuButton(width - 175, headerHeight + 40 * menuButtons.size(), 150, 40, font, "Pause", MenuButton::PAUSE_GAME));
-  menuButtons.push_back(new MenuButton(width - 175, headerHeight + 40 * menuButtons.size(), 150, 40, font, "Solve", MenuButton::SOLVE_GAME));
+  menuButtons.push_back(new MenuButton(width - 185, headerHeight + 40 * menuButtons.size(), 150, 40, font, "New Game", MenuButton::NEW_GAME));
+  menuButtons.push_back(new MenuButton(width - 185, headerHeight + 40 * menuButtons.size(), 150, 40, font, "Pause", MenuButton::PAUSE_GAME));
+  menuButtons.push_back(new MenuButton(width - 185, headerHeight + 40 * menuButtons.size(), 150, 40, font, "Solve", MenuButton::SOLVE_GAME));
+  menuButtons.push_back(new MenuButton(width - 185, headerHeight + 40 * menuButtons.size(), 150, 40, font, "Exit", MenuButton::EXIT_GAME));
 
   // Set up number buttons
   numberButtons.resize(sudoku->getBoxSize());
@@ -107,6 +108,9 @@ void MainWindow::onMouseButtonClicked(const Vector2f &mousePosition)
         break;
       case MenuButton::PAUSE_GAME:
         onPauseButtonClicked();
+        break;
+      case MenuButton::EXIT_GAME:
+        exit(0);
         break;
       default:
         break;
