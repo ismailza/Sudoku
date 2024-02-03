@@ -2,12 +2,13 @@
 
 Welcome to the Sudoku Game repository! This project is a classic Sudoku puzzle game built using [SFML (Simple and Fast Multimedia Library)](https://www.sfml-dev.org/). Enjoy a user-friendly interface, various difficulty levels, and hours of brain-teasing fun!
 
+The game is developed using a backtracking algorithm to generate and solve the Sudoku puzzles. The algorithm works by filling in the grid with numbers from 1 to the grid size (9 for a standard 9x9 Sudoku grid) aleatorily. If the number is valid, it moves on to the next cell. If the number is not valid, it tries the next number. If no number is valid, it backtracks to the previous cell and tries a different number. This process is repeated until the grid is filled.
+
 ## Features
 
 - Classic Sudoku gameplay with a clean, intuitive interface.
 - Multiple difficulty levels to challenge both beginners and seasoned players.
 - Enhanced audio effects for an immersive experience.
-- Save and resume game functionality.
 
 ## Screenshots
 
