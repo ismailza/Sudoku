@@ -14,23 +14,19 @@ Welcome to the Sudoku Game repository! This project is a classic Sudoku puzzle g
 <p align="center">
 
   ![image](https://github.com/ismailza/Sudoku/assets/122171824/6fcb3e99-c5c8-49d4-b1b0-573eb3128635)
-</p>
-<p align="center">
 
   ![image](https://github.com/ismailza/Sudoku/assets/122171824/a83349d0-f001-4932-84b2-d33456ba9454)
-</p>
-<p align="center">
 
-![image](https://github.com/ismailza/Sudoku/assets/122171824/5f5fafbd-1e7a-4e71-b850-f24cf57c4665)
-</p>
-<p align="center">
+  ![image](https://github.com/ismailza/Sudoku/assets/122171824/82ab7d47-bcce-4ec2-b1d0-0eacdc403be7)
 
-![image](https://github.com/ismailza/Sudoku/assets/122171824/4484c161-5381-4eeb-8095-c553117d420e)
-</p>
+  ![image](https://github.com/ismailza/Sudoku/assets/122171824/7b6de459-3ce7-446e-ae2d-a1d8b033f054)
 
-<p align="center">
+  ![image](https://github.com/ismailza/Sudoku/assets/122171824/b5997af8-8156-4099-a793-e5bacf0586ce)
 
-![image](https://github.com/ismailza/Sudoku/assets/122171824/7846ad45-b1ce-4438-83a5-20a240971b32)
+  ![image](https://github.com/ismailza/Sudoku/assets/122171824/770b4845-2616-4a46-bb2b-cecd1db92035)
+
+  ![image](https://github.com/ismailza/Sudoku/assets/122171824/c5c5f7b8-83b1-4c3c-ab6e-fe6620e954f8)
+
 </p>
 
 ## Getting Started
