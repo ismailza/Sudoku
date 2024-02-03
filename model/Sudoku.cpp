@@ -223,9 +223,9 @@ bool Sudoku::checkValue(int row, int col, unsigned int value)
   // Check row and column
   for (int i = 0; i < size; i++)
   {
-    if (board[row][i] == value)
+    if (i != col && board[row][i] == value)
       return false;
-    if (board[i][col] == value)
+    if (i != row && board[i][col] == value)
       return false;
   }
 
@@ -234,10 +234,13 @@ bool Sudoku::checkValue(int row, int col, unsigned int value)
   int colStart = (col / boxSize) * boxSize;
   int rowEnd = rowStart + boxSize;
   int colEnd = colStart + boxSize;
-  for (int i = rowStart; i < rowEnd; i++)
-    for (int j = colStart; j < colEnd; j++)
-      if (board[i][j] == value)
-        return false;
+  for (int i = rowStart; i < rowEnd; i++) {
+    if (i != row) {
+      for (int j = colStart; j < colEnd; j++)
+        if (j != col && board[i][j] == value)
+          return false;
+    }
+  }
 
   return true;
 }
@@ -307,4 +310,17 @@ bool Sudoku::isSolved()
 {
   int row, col;
   return !findUnassignedLocation(row, col);
+}
+
+/**
+ * @brief Check if the Sudoku is solvable
+ * @return true if the Sudoku is solvable, false otherwise
+*/
+bool Sudoku::isSolvable()
+{
+  for (int i = 0; i < size; i++)
+    for (int j = 0; j < size; j++)
+      if (board[i][j] != 0 && !checkValue(i, j, board[i][j]))
+        return false;
+  return true;
 }

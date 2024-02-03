@@ -33,6 +33,7 @@ public:
     vector<vector<unsigned int>> getBoard();
     void resetBoard();
     bool isSolved();
+    bool isSolvable();
 };
 
 #endif // SUDOKU_H

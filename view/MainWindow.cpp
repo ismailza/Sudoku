@@ -225,8 +225,7 @@ void MainWindow::update(int rowClicked, int colClicked, int valueClicked)
   if (clickedSquare->getValueConstant())
     return;
   clickedSquare->setValue(valueClicked);
-  if (sudoku->checkValue(rowClicked, colClicked, valueClicked))
-    sudoku->setValueAt(rowClicked, colClicked, valueClicked);
+  sudoku->setValueAt(rowClicked, colClicked, valueClicked);
 
   if (sudoku->isSolved())
   {
@@ -329,6 +328,13 @@ void MainWindow::onSolveButtonClicked()
 {
   if (gameFinished || gamePaused)
     return;
+  // Check if the game is solvable
+  if (!sudoku->isSolvable())
+  {
+    cout << "The Sudoku is not solvable!" << endl;
+    return;
+  }
+  sudoku->solveSudoku();
   for (auto &row : sudokuSquares)
     for (auto &square : row)
       square->setValue(sudoku->getValueAt(square->getRow(), square->getCol()));
